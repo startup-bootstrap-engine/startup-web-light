@@ -16,8 +16,8 @@ export const StatsOverview = (): JSX.Element => {
       />
       <StatCard
         icon={<MessageSquare className="w-6 h-6" />}
-        title="Posts Today"
-        value={stats.postsToday}
+        title="Content Today"
+        value={stats.contentToday}
         trend="+23 from yesterday"
         color="purple-500"
       />

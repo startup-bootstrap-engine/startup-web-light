@@ -95,7 +95,7 @@ const OpportunityCard = ({
   onMarkRead,
   onRemove,
 }: OpportunityCardProps): JSX.Element => {
-  const { post, analysis } = opportunity;
+  const { content, analysis } = opportunity;
   const priorityColors = {
     high: 'text-reddit-orange border-reddit-orange/30',
     medium: 'text-yellow-500 border-yellow-500/30',
@@ -121,13 +121,13 @@ const OpportunityCard = ({
       <div className="flex items-start justify-between mb-3">
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-1">
-            <span className="text-sm text-purple-400 font-medium">r/{post.subreddit}</span>
-            <span className="text-xs text-gray-500">{formatTimeAgo(post.createdAt)}</span>
+            <span className="text-sm text-purple-400 font-medium">r/{content.sourceName}</span>
+            <span className="text-xs text-gray-500">{formatTimeAgo(content.createdAt)}</span>
             {!analysis.isRead && (
               <span className="w-2 h-2 bg-reddit-orange rounded-full animate-pulse"></span>
             )}
           </div>
-          <h3 className="font-semibold text-white mb-2 line-clamp-2">{post.title}</h3>
+          <h3 className="font-semibold text-white mb-2 line-clamp-2">{content.title}</h3>
         </div>
         <div className="flex gap-1 ml-4">
           <button
@@ -155,10 +155,10 @@ const OpportunityCard = ({
       <div className="flex items-center gap-4 mb-3 text-xs text-gray-400">
         <span className="flex items-center gap-1">
           <ArrowUpRight className="w-3 h-3" />
-          {post.upvotes} upvotes
+          {content.engagementScore} upvotes
         </span>
-        <span>{post.commentCount} comments</span>
-        <span>by u/{post.author}</span>
+        <span>{content.commentCount} comments</span>
+        <span>by u/{content.author}</span>
       </div>
 
       {/* AI Analysis Preview */}
@@ -179,7 +179,7 @@ const OpportunityCard = ({
           </span>
         </div>
         <a
-          href={post.url}
+          href={content.url}
           target="_blank"
           rel="noopener noreferrer"
           onClick={(e) => e.stopPropagation()}
@@ -204,7 +204,7 @@ const OpportunityDetailModal = ({
   onClose,
   onMarkRead,
 }: OpportunityDetailModalProps): JSX.Element => {
-  const { post, analysis } = opportunity;
+  const { content, analysis } = opportunity;
   const [copied, setCopied] = useState(false);
 
   const handleCopy = (text: string) => {
@@ -221,7 +221,7 @@ const OpportunityDetailModal = ({
         <div className="flex items-start justify-between mb-6">
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-2">
-              <span className="text-sm text-purple-400 font-medium">r/{post.subreddit}</span>
+              <span className="text-sm text-purple-400 font-medium">r/{content.sourceName}</span>
               <span
                 className={`text-xs px-2 py-1 rounded-full ${
                   analysis.priority === 'high'
@@ -234,14 +234,14 @@ const OpportunityDetailModal = ({
                 {analysis.priority.toUpperCase()} Priority
               </span>
             </div>
-            <h2 className="text-2xl font-bold text-white mb-2">{post.title}</h2>
+            <h2 className="text-2xl font-bold text-white mb-2">{content.title}</h2>
             <div className="flex items-center gap-4 text-sm text-gray-400">
               <span className="flex items-center gap-1">
                 <TrendingUp className="w-4 h-4" />
-                {post.upvotes} upvotes
+                {content.engagementScore} upvotes
               </span>
-              <span>{post.commentCount} comments</span>
-              <span>by u/{post.author}</span>
+              <span>{content.commentCount} comments</span>
+              <span>by u/{content.author}</span>
             </div>
           </div>
           <button
@@ -255,7 +255,7 @@ const OpportunityDetailModal = ({
         {/* Post Content */}
         <div className="bg-white/5 rounded-xl p-4 mb-6">
           <h3 className="text-sm font-semibold text-gray-300 mb-2">Post Content</h3>
-          <p className="text-gray-400 text-sm whitespace-pre-wrap">{post.content}</p>
+          <p className="text-gray-400 text-sm whitespace-pre-wrap">{content.content}</p>
         </div>
 
         {/* AI Analysis */}
@@ -307,7 +307,7 @@ const OpportunityDetailModal = ({
         {/* Actions */}
         <div className="flex gap-3">
           <a
-            href={post.url}
+            href={content.url}
             target="_blank"
             rel="noopener noreferrer"
             className="flex-1 bg-reddit-orange hover:bg-reddit-orange-dark px-6 py-3 rounded-lg font-semibold transition-all flex items-center justify-center gap-2"

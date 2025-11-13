@@ -6,8 +6,8 @@ interface MonitoringState {
   opportunities: Opportunity[];
   stats: MonitoringStats;
 
-  // Subreddit actions
-  addSubreddit: (subreddit: Omit<Subreddit, 'id' | 'createdAt'>) => void;
+  // Subreddit actions (backward compatibility)
+  addSubreddit: (subreddit: Omit<Subreddit, 'id' | 'createdAt' | 'updatedAt'>) => void;
   updateSubreddit: (id: string, updates: Partial<Subreddit>) => void;
   removeSubreddit: (id: string) => void;
   toggleSubreddit: (id: string) => void;
@@ -31,6 +31,7 @@ export const useMonitoringStore = create<MonitoringState>((set) => ({
       minComments: 5,
       isActive: true,
       createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
       lastChecked: new Date().toISOString(),
     },
     {
@@ -41,6 +42,7 @@ export const useMonitoringStore = create<MonitoringState>((set) => ({
       minComments: 10,
       isActive: true,
       createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
       lastChecked: new Date().toISOString(),
     },
     {
@@ -51,19 +53,23 @@ export const useMonitoringStore = create<MonitoringState>((set) => ({
       minComments: 8,
       isActive: true,
       createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
       lastChecked: new Date().toISOString(),
     },
   ],
   opportunities: [
     {
-      post: {
+      content: {
         id: '1',
-        redditId: 'abc123',
-        subreddit: 'webdev',
+        platform: 'reddit',
+        externalContentId: 'abc123',
+        sourceId: '1',
+        sourceName: 'webdev',
+        contentType: 'post',
         title: 'Looking for feedback on my portfolio website',
         content: 'I just finished my portfolio and would love some feedback...',
         author: 'webdev_newbie',
-        upvotes: 45,
+        engagementScore: 45,
         commentCount: 23,
         url: 'https://reddit.com/r/webdev/comments/abc123',
         createdAt: new Date(Date.now() - 5 * 60000).toISOString(),
@@ -71,7 +77,7 @@ export const useMonitoringStore = create<MonitoringState>((set) => ({
       },
       analysis: {
         id: 'a1',
-        postId: '1',
+        contentId: '1',
         engagementStrategy: 'Offer constructive feedback on specific aspects of the portfolio, then mention how your tool helps with similar improvements',
         brandOpportunity: 'This user is actively seeking improvement, perfect opportunity to showcase monitoring/analytics tools',
         recommendedAction: 'Comment with 2-3 specific portfolio tips, then casually mention your relevant service',
@@ -82,14 +88,17 @@ export const useMonitoringStore = create<MonitoringState>((set) => ({
       },
     },
     {
-      post: {
+      content: {
         id: '2',
-        redditId: 'def456',
-        subreddit: 'startups',
+        platform: 'reddit',
+        externalContentId: 'def456',
+        sourceId: '2',
+        sourceName: 'startups',
+        contentType: 'post',
         title: 'Best tools for early-stage SaaS?',
         content: 'What tools do you recommend for a bootstrapped SaaS startup?',
         author: 'founder_mike',
-        upvotes: 67,
+        engagementScore: 67,
         commentCount: 45,
         url: 'https://reddit.com/r/startups/comments/def456',
         createdAt: new Date(Date.now() - 23 * 60000).toISOString(),
@@ -97,7 +106,7 @@ export const useMonitoringStore = create<MonitoringState>((set) => ({
       },
       analysis: {
         id: 'a2',
-        postId: '2',
+        contentId: '2',
         engagementStrategy: 'Share a comprehensive list of tools you use, position yours as part of the stack without being pushy',
         brandOpportunity: 'High-intent founder actively building, looking for solutions',
         recommendedAction: 'Provide 5-7 tool recommendations with brief explanations, include yours naturally in the list',
@@ -108,14 +117,17 @@ export const useMonitoringStore = create<MonitoringState>((set) => ({
       },
     },
     {
-      post: {
+      content: {
         id: '3',
-        redditId: 'ghi789',
-        subreddit: 'marketing',
+        platform: 'reddit',
+        externalContentId: 'ghi789',
+        sourceId: '3',
+        sourceName: 'marketing',
+        contentType: 'post',
         title: 'How to grow organic traffic in 2024?',
         content: 'My blog has been stagnant for months. What strategies are working for you?',
         author: 'content_creator_jane',
-        upvotes: 89,
+        engagementScore: 89,
         commentCount: 56,
         url: 'https://reddit.com/r/marketing/comments/ghi789',
         createdAt: new Date(Date.now() - 1 * 60 * 60000).toISOString(),
@@ -123,7 +135,7 @@ export const useMonitoringStore = create<MonitoringState>((set) => ({
       },
       analysis: {
         id: 'a3',
-        postId: '3',
+        contentId: '3',
         engagementStrategy: 'Share 3-4 actionable SEO strategies that worked for you, build credibility before any mention',
         brandOpportunity: 'Content creator struggling with growth - good fit for monitoring/analytics tools',
         recommendedAction: 'Lead with value - share your best organic growth tactics, then mention tool in context',
@@ -136,7 +148,7 @@ export const useMonitoringStore = create<MonitoringState>((set) => ({
   ],
   stats: {
     activeMonitors: 3,
-    postsToday: 127,
+    contentToday: 127,
     opportunities: 8,
     engaged: 12,
   },
@@ -149,6 +161,7 @@ export const useMonitoringStore = create<MonitoringState>((set) => ({
           ...subreddit,
           id: Date.now().toString(),
           createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
         },
       ],
       stats: {
