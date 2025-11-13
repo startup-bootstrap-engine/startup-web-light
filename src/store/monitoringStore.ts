@@ -23,6 +23,7 @@ interface MonitoringState {
   addOpportunity: (opportunity: Opportunity) => void;
   markOpportunityAsRead: (analysisId: string) => void;
   removeOpportunity: (analysisId: string) => void;
+  reprocessOpportunity: (analysisId: string) => void;
 
   // Stats actions
   updateStats: (stats: Partial<MonitoringStats>) => void;
@@ -307,6 +308,19 @@ export const useMonitoringStore = create<MonitoringState>((set, get) => ({
     set((state) => ({
       opportunities: state.opportunities.filter((opp) => opp.analysis.id !== analysisId),
     })),
+
+  reprocessOpportunity: (analysisId) =>
+    set((state) => {
+      // In a real implementation, this would trigger an API call to reprocess the content
+      // For now, we'll just mark it as unread to simulate reprocessing
+      return {
+        opportunities: state.opportunities.map((opp) =>
+          opp.analysis.id === analysisId
+            ? { ...opp, analysis: { ...opp.analysis, isRead: false } }
+            : opp
+        ),
+      };
+    }),
 
   updateStats: (stats) =>
     set((state) => ({

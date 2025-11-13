@@ -1,18 +1,30 @@
-import { ArrowUpRight, Check, Copy, ExternalLink, Sparkles, TrendingUp, X } from 'lucide-react';
+import { ArrowUpRight, Check, Copy, ExternalLink, RefreshCw, Search, Sparkles, TrendingUp, X } from 'lucide-react';
 import { JSX, useState } from 'react';
 import { useMonitoringStore } from '../../store/monitoringStore';
-import { Opportunity, Platform, PLATFORM_DISPLAY_NAMES, PLATFORM_ICONS, getEngagementLabel, getContentUrl } from '../../types/monitoring';
+import { Opportunity, Platform, PLATFORM_DISPLAY_NAMES, PLATFORM_ICONS, getEngagementLabel, getContentUrl, ContentType } from '../../types/monitoring';
 
 export const OpportunitiesFeed = (): JSX.Element => {
-  const { opportunities, markOpportunityAsRead, removeOpportunity, stats } = useMonitoringStore();
+  const { opportunities, markOpportunityAsRead, removeOpportunity, reprocessOpportunity, stats } = useMonitoringStore();
   const [selectedOpp, setSelectedOpp] = useState<Opportunity | null>(null);
   const [filter, setFilter] = useState<'all' | 'high' | 'medium' | 'low'>('all');
   const [platformFilter, setPlatformFilter] = useState<Platform | 'all'>('all');
+  const [contentTypeFilter, setContentTypeFilter] = useState<ContentType | 'all'>('all');
+  const [minEngagement, setMinEngagement] = useState<number>(0);
+  const [minConfidence, setMinConfidence] = useState<number>(0);
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [showFilters, setShowFilters] = useState(false);
 
   const filteredOpportunities = opportunities.filter(
     (opp) =>
       (filter === 'all' || opp.analysis.priority === filter) &&
-      (platformFilter === 'all' || opp.content.platform === platformFilter)
+      (platformFilter === 'all' || opp.content.platform === platformFilter) &&
+      (contentTypeFilter === 'all' || opp.content.contentType === contentTypeFilter) &&
+      opp.content.engagementScore >= minEngagement &&
+      opp.analysis.confidenceScore >= minConfidence / 100 &&
+      (searchQuery === '' ||
+        opp.content.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        opp.content.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        opp.content.author.toLowerCase().includes(searchQuery.toLowerCase()))
   );
 
   return (
@@ -24,51 +36,152 @@ export const OpportunitiesFeed = (): JSX.Element => {
             Opportunities
           </h2>
           <p className="text-gray-400 text-xs mt-1">
-            {stats.opportunities} found today
+            {filteredOpportunities.length} of {stats.opportunities} opportunities
           </p>
         </div>
 
-        {/* Filters */}
-        <div className="flex gap-2 flex-wrap items-center">
-          {(['all', 'high', 'medium', 'low'] as const).map((priority) => (
-            <button
-              key={priority}
-              onClick={() => setFilter(priority)}
-              className={`px-2.5 py-1 rounded text-xs transition-all ${
-                filter === priority
-                  ? 'bg-reddit-orange text-white'
-                  : 'bg-white/5 text-gray-400 hover:bg-white/10'
-              }`}
-            >
-              {priority.charAt(0).toUpperCase() + priority.slice(1)}
-            </button>
-          ))}
-          <div className="w-px h-4 bg-white/10"></div>
-          <button
-            onClick={() => setPlatformFilter('all')}
-            className={`px-2.5 py-1 rounded text-xs transition-all ${
-              platformFilter === 'all'
-                ? 'bg-purple-600 text-white'
-                : 'bg-white/5 text-gray-400 hover:bg-white/10'
-            }`}
-          >
-            All
-          </button>
-          {(Object.keys(PLATFORM_DISPLAY_NAMES) as Platform[]).map((platform) => (
-            <button
-              key={platform}
-              onClick={() => setPlatformFilter(platform)}
-              className={`px-2.5 py-1 rounded text-xs transition-all ${
-                platformFilter === platform
-                  ? 'bg-purple-600 text-white'
-                  : 'bg-white/5 text-gray-400 hover:bg-white/10'
-              }`}
-            >
-              {PLATFORM_DISPLAY_NAMES[platform]}
-            </button>
-          ))}
-        </div>
+        <button
+          onClick={() => setShowFilters(!showFilters)}
+          className="px-3 py-2 bg-white/5 hover:bg-white/10 rounded-lg text-sm transition-colors flex items-center gap-2"
+        >
+          <Search className="w-4 h-4" />
+          {showFilters ? 'Hide Filters' : 'Show Filters'}
+        </button>
       </div>
+
+      {/* Search Bar */}
+      <div className="relative">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+        <input
+          type="text"
+          placeholder="Search opportunities by title, content, or author..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="w-full bg-white/5 border border-white/10 rounded-lg pl-10 pr-4 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-reddit-orange/50"
+        />
+      </div>
+
+      {/* Filters */}
+      {showFilters && (
+        <div className="bg-white/5 border border-white/10 rounded-lg p-4 space-y-3">
+          {/* Priority Filter */}
+          <div>
+            <label className="text-xs text-gray-400 mb-2 block">Priority</label>
+            <div className="flex gap-2 flex-wrap items-center">
+              {(['all', 'high', 'medium', 'low'] as const).map((priority) => (
+                <button
+                  key={priority}
+                  onClick={() => setFilter(priority)}
+                  className={`px-2.5 py-1 rounded text-xs transition-all ${
+                    filter === priority
+                      ? 'bg-reddit-orange text-white'
+                      : 'bg-white/5 text-gray-400 hover:bg-white/10'
+                  }`}
+                >
+                  {priority.charAt(0).toUpperCase() + priority.slice(1)}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Platform Filter */}
+          <div>
+            <label className="text-xs text-gray-400 mb-2 block">Platform</label>
+            <div className="flex gap-2 flex-wrap items-center">
+              <button
+                onClick={() => setPlatformFilter('all')}
+                className={`px-2.5 py-1 rounded text-xs transition-all ${
+                  platformFilter === 'all'
+                    ? 'bg-purple-600 text-white'
+                    : 'bg-white/5 text-gray-400 hover:bg-white/10'
+                }`}
+              >
+                All
+              </button>
+              {(Object.keys(PLATFORM_DISPLAY_NAMES) as Platform[]).map((platform) => (
+                <button
+                  key={platform}
+                  onClick={() => setPlatformFilter(platform)}
+                  className={`px-2.5 py-1 rounded text-xs transition-all ${
+                    platformFilter === platform
+                      ? 'bg-purple-600 text-white'
+                      : 'bg-white/5 text-gray-400 hover:bg-white/10'
+                  }`}
+                >
+                  {PLATFORM_DISPLAY_NAMES[platform]}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Content Type Filter */}
+          <div>
+            <label className="text-xs text-gray-400 mb-2 block">Content Type</label>
+            <div className="flex gap-2 flex-wrap items-center">
+              {(['all', 'post', 'comment', 'question', 'discussion', 'issue', 'tweet', 'message'] as const).map((type) => (
+                <button
+                  key={type}
+                  onClick={() => setContentTypeFilter(type as ContentType | 'all')}
+                  className={`px-2.5 py-1 rounded text-xs transition-all ${
+                    contentTypeFilter === type
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-white/5 text-gray-400 hover:bg-white/10'
+                  }`}
+                >
+                  {type.charAt(0).toUpperCase() + type.slice(1)}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Engagement & Confidence Filters */}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="text-xs text-gray-400 mb-2 block">
+                Min Engagement: {minEngagement}
+              </label>
+              <input
+                type="range"
+                min="0"
+                max="500"
+                step="10"
+                value={minEngagement}
+                onChange={(e) => setMinEngagement(Number(e.target.value))}
+                className="w-full"
+              />
+            </div>
+            <div>
+              <label className="text-xs text-gray-400 mb-2 block">
+                Min Confidence: {minConfidence}%
+              </label>
+              <input
+                type="range"
+                min="0"
+                max="100"
+                step="5"
+                value={minConfidence}
+                onChange={(e) => setMinConfidence(Number(e.target.value))}
+                className="w-full"
+              />
+            </div>
+          </div>
+
+          {/* Clear Filters */}
+          <button
+            onClick={() => {
+              setFilter('all');
+              setPlatformFilter('all');
+              setContentTypeFilter('all');
+              setMinEngagement(0);
+              setMinConfidence(0);
+              setSearchQuery('');
+            }}
+            className="text-xs text-reddit-orange hover:underline"
+          >
+            Clear All Filters
+          </button>
+        </div>
+      )}
 
       {/* Opportunities List */}
       <div className="space-y-3">
@@ -87,6 +200,7 @@ export const OpportunitiesFeed = (): JSX.Element => {
               onView={() => setSelectedOpp(opp)}
               onMarkRead={() => markOpportunityAsRead(opp.analysis.id)}
               onRemove={() => removeOpportunity(opp.analysis.id)}
+              onReprocess={() => reprocessOpportunity(opp.analysis.id)}
             />
           ))
         )}
@@ -101,6 +215,9 @@ export const OpportunitiesFeed = (): JSX.Element => {
             markOpportunityAsRead(selectedOpp.analysis.id);
             setSelectedOpp(null);
           }}
+          onReprocess={() => {
+            reprocessOpportunity(selectedOpp.analysis.id);
+          }}
         />
       )}
     </div>
@@ -112,6 +229,7 @@ interface OpportunityCardProps {
   onView: () => void;
   onMarkRead: () => void;
   onRemove: () => void;
+  onReprocess: () => void;
 }
 
 const OpportunityCard = ({
@@ -119,6 +237,7 @@ const OpportunityCard = ({
   onView,
   onMarkRead,
   onRemove,
+  onReprocess,
 }: OpportunityCardProps): JSX.Element => {
   const { content, analysis } = opportunity;
   const priorityColors = {
@@ -146,8 +265,12 @@ const OpportunityCard = ({
       <div className="flex items-start justify-between mb-2">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
+            <span className="text-lg">{PLATFORM_ICONS[content.platform]}</span>
             <span className="text-xs px-2 py-0.5 bg-white/10 text-gray-400 rounded">
               {PLATFORM_DISPLAY_NAMES[content.platform]}
+            </span>
+            <span className="text-xs px-2 py-0.5 bg-blue-500/20 text-blue-300 rounded">
+              {content.contentType}
             </span>
             <span className="text-xs text-gray-400">{content.sourceName}</span>
             <span className="text-xs text-gray-500">{formatTimeAgo(content.createdAt)}</span>
@@ -169,9 +292,20 @@ const OpportunityCard = ({
           <button
             onClick={(e) => {
               e.stopPropagation();
+              onReprocess();
+            }}
+            className="p-1.5 hover:bg-white/10 rounded transition-colors"
+            title="Reprocess with AI"
+          >
+            <RefreshCw className="w-3.5 h-3.5 text-blue-400" />
+          </button>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
               onMarkRead();
             }}
             className="p-1.5 hover:bg-white/10 rounded transition-colors"
+            title="Mark as read"
           >
             <Check className="w-3.5 h-3.5 text-green-400" />
           </button>
@@ -181,6 +315,7 @@ const OpportunityCard = ({
               onRemove();
             }}
             className="p-1.5 hover:bg-red-500/20 rounded transition-colors"
+            title="Remove"
           >
             <X className="w-3.5 h-3.5 text-red-400" />
           </button>
@@ -223,12 +358,14 @@ interface OpportunityDetailModalProps {
   opportunity: Opportunity;
   onClose: () => void;
   onMarkRead: () => void;
+  onReprocess: () => void;
 }
 
 const OpportunityDetailModal = ({
   opportunity,
   onClose,
   onMarkRead,
+  onReprocess,
 }: OpportunityDetailModalProps): JSX.Element => {
   const { content, analysis } = opportunity;
   const [copied, setCopied] = useState(false);
@@ -251,6 +388,9 @@ const OpportunityDetailModal = ({
               <span className="text-sm text-purple-400 font-medium">{content.sourceName}</span>
               <span className="text-xs px-2 py-1 bg-white/10 text-gray-400 rounded-full">
                 {PLATFORM_DISPLAY_NAMES[content.platform]}
+              </span>
+              <span className="text-xs px-2 py-1 bg-blue-500/20 text-blue-300 rounded-full">
+                {content.contentType}
               </span>
               <span
                 className={`text-xs px-2 py-1 rounded-full ${
@@ -345,6 +485,14 @@ const OpportunityDetailModal = ({
             <ExternalLink className="w-5 h-5" />
             Open on {PLATFORM_DISPLAY_NAMES[content.platform]}
           </a>
+          <button
+            onClick={onReprocess}
+            className="px-6 py-3 bg-blue-600 hover:bg-blue-700 rounded-lg font-semibold transition-all flex items-center gap-2"
+            title="Reanalyze with AI"
+          >
+            <RefreshCw className="w-5 h-5" />
+            Reprocess
+          </button>
           <button
             onClick={onMarkRead}
             className="px-6 py-3 bg-white/10 hover:bg-white/20 rounded-lg font-semibold transition-all flex items-center gap-2"

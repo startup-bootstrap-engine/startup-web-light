@@ -71,21 +71,21 @@ This roadmap outlines the development phases for building the Multi-Platform Com
 - [x] Add platform filter to source list
 
 ### 2.3 Content Queue & Analysis Dashboard
-- [ ] Display pending content awaiting analysis (all platforms)
-- [ ] Show AI analysis results with:
-  - **Platform badge** (icon + color)
-  - Content type indicator (post, question, issue, etc.)
-  - Confidence scoring
-  - Engagement strategy preview
-  - Brand opportunity highlights
-- [ ] Add "Copy Strategy" button for quick access
-- [ ] Implement manual reprocess functionality
-- [ ] Add content filtering:
-  - By platform
-  - By content type
-  - By confidence score
-  - By engagement metrics
-- [ ] Add search across all platforms
+- [x] Display pending content awaiting analysis (all platforms)
+- [x] Show AI analysis results with:
+  - [x] **Platform badge** (icon + color)
+  - [x] Content type indicator (post, question, issue, etc.)
+  - [x] Confidence scoring
+  - [x] Engagement strategy preview
+  - [x] Brand opportunity highlights
+- [x] Add "Copy Strategy" button for quick access
+- [x] Implement manual reprocess functionality
+- [x] Add content filtering:
+  - [x] By platform
+  - [x] By content type
+  - [x] By confidence score
+  - [x] By engagement metrics
+- [x] Add search across all platforms
 
 ### 2.4 Realtime Features
 - [ ] Subscribe to Supabase Realtime on `ai_analysis` table
