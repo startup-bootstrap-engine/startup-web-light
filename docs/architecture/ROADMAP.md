@@ -56,19 +56,19 @@ This roadmap outlines the development phases for building the Multi-Platform Com
 - [x] Implement authentication with multiple providers
 
 ### 2.2 Multi-Platform Source Management
-- [ ] Create UI to add/remove sources across platforms
-- [ ] Add **platform selector dropdown** in add source form
-- [ ] Add form for configuring filters:
-  - Platform selection
-  - Source identifier (dynamic label based on platform)
-  - Minimum engagement score (dynamic label based on platform)
-  - Minimum comments
-  - Keywords
-  - Platform-specific configuration (collapsible advanced options)
-- [ ] Display list of monitored sources with platform badges/icons
-- [ ] Enable/disable individual sources
-- [ ] Group sources by platform (optional view toggle)
-- [ ] Add platform filter to source list
+- [x] Create UI to add/remove sources across platforms
+- [x] Add **platform selector dropdown** in add source form
+- [x] Add form for configuring filters
+  - [x] Platform selection
+  - [x] Source identifier (dynamic label based on platform)
+  - [x] Minimum engagement score (dynamic label based on platform)
+  - [x] Minimum comments
+  - [x] Keywords
+  - [x] Platform-specific configuration (collapsible advanced options - basic infrastructure in place)
+- [x] Display list of monitored sources with platform badges/icons
+- [x] Enable/disable individual sources
+- [x] Group sources by platform (implemented via filter)
+- [x] Add platform filter to source list
 
 ### 2.3 Content Queue & Analysis Dashboard
 - [ ] Display pending content awaiting analysis (all platforms)
