@@ -157,7 +157,7 @@ export const AuthenticationModal: React.FC = () => {
             <button
               type="button"
               onClick={handleBackToLogin}
-              className="text-blue-500 text-center hover:underline w-full mt-4"
+              className="text-reddit-orange text-center hover:underline w-full mt-4"
             >
               Back to Login
             </button>
@@ -182,7 +182,7 @@ export const AuthenticationModal: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setIsRegistering(!isRegistering)}
-                className="text-blue-500 text-center hover:underline w-full"
+                className="text-reddit-orange text-center hover:underline w-full"
               >
                 {isRegistering
                   ? 'Already have an account? Sign in'
@@ -192,7 +192,7 @@ export const AuthenticationModal: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setIsForgotPassword(true)}
-                  className="text-blue-500 text-center hover:underline w-full"
+                  className="text-reddit-orange text-center hover:underline w-full"
                 >
                   Forgot Password?
                 </button>

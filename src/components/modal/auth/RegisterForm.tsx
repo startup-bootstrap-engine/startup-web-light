@@ -38,7 +38,7 @@ export const RegisterForm: React.FC<IRegisterFormProps> = ({ onSubmit, register,
         className="w-full"
         error={errors.passwordConfirmation?.message}
       />
-      <Button type="submit" className="btn-primary w-full p-2">
+      <Button type="submit" className="btn-primary w-full p-2 bg-reddit-orange hover:bg-reddit-orange-dark border-none">
         Create Account
       </Button>
     </form>

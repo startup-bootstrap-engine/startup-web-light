@@ -33,7 +33,7 @@ export const ForgotPasswordForm: React.FC<IProps> = ({ onSubmit }) => {
         />
         {errors.email && <span className="text-error text-sm mt-1">{errors.email.message}</span>}
       </div>
-      <button type="submit" className="btn btn-primary w-full">
+      <button type="submit" className="btn btn-primary w-full bg-reddit-orange hover:bg-reddit-orange-dark border-none">
         Send Reset Link
       </button>
     </form>

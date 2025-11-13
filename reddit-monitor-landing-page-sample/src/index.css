@@ -2,14 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  color-scheme: dark;
-}
-
-body {
-  @apply bg-black text-white;
-}
-
 @layer utilities {
   @keyframes fade-in {
     from {
@@ -40,15 +32,6 @@ body {
     }
   }
 
-  @keyframes pulse-glow {
-    0%, 100% {
-      opacity: 0.3;
-    }
-    50% {
-      opacity: 0.6;
-    }
-  }
-
   .animate-fade-in {
     animation: fade-in 1s ease-out;
   }
@@ -61,10 +44,6 @@ body {
     animation: float 6s ease-in-out infinite;
   }
 
-  .animate-pulse-glow {
-    animation: pulse-glow 3s ease-in-out infinite;
-  }
-
   .animation-delay-200 {
     animation-delay: 0.2s;
   }
@@ -75,10 +54,6 @@ body {
 
   .animation-delay-400 {
     animation-delay: 0.4s;
-  }
-
-  .animation-delay-500 {
-    animation-delay: 0.5s;
   }
 }
 

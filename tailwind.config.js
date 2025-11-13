@@ -9,19 +9,35 @@ export default {
     'node_modules/react-daisyui/dist/**/*.jsx',
   ],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        reddit: {
+          orange: '#FF4500',
+          'orange-dark': '#CC3700',
+          'orange-light': '#FF5722',
+        },
+      },
+    },
   },
   plugins: [require('daisyui')],
   daisyui: {
     themes: [
       {
-        sunset: {
-          ...require('daisyui/src/theming/themes')['sunset'],
-          primary: '#4ade80', // mint green
-          'primary-focus': '#22c55e',
+        reddit: {
+          ...require('daisyui/src/theming/themes')['dark'],
+          primary: '#FF4500', // Reddit orange
+          'primary-focus': '#CC3700',
+          'base-100': '#000000', // Black background
+          'base-200': '#0a0a0a',
+          'base-300': '#1a1a1a',
+          'base-content': '#ffffff',
+          accent: '#9333ea', // Purple accent
+          'accent-focus': '#7c3aed',
+          secondary: '#ec4899', // Pink secondary
+          'secondary-focus': '#db2777',
         },
       },
     ],
-    darkTheme: 'sunset',
+    darkTheme: 'reddit',
   },
 };

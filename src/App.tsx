@@ -1,36 +1,19 @@
-import { JSX, useState } from 'react';
+import { JSX } from 'react';
 import { Theme } from 'react-daisyui';
 import { AuthErrorHandler } from './components/auth/AuthErrorHandler';
 import { Toast } from './components/common/Toast';
 import { Layout } from './components/layout/Layout';
 import { AuthenticationModal } from './components/modal/auth/AuthenticationModal';
-import { TabNavigation } from './components/navigation/TabNavigation';
-import { categories, initialAssets } from './mocks/data';
-import { IAsset } from './types';
-import { CategoryView } from './views/CategoryView';
-import { SummaryView } from './views/SummaryView';
+import { DashboardView } from './views/DashboardView';
 
 export const App = (): JSX.Element => {
-  const [activeTab, setActiveTab] = useState<string>('summary');
-  const [assets] = useState<IAsset[]>(initialAssets);
-
   return (
-    <Theme dataTheme="sunset">
+    <Theme dataTheme="reddit">
       <Layout>
         <AuthErrorHandler />
         <AuthenticationModal />
         <Toast />
-        <TabNavigation categories={categories} activeTab={activeTab} onTabChange={setActiveTab} />
-        <main className="flex-1">
-          {activeTab === 'summary' ? (
-            <SummaryView assets={assets} />
-          ) : (
-            <CategoryView
-              assets={assets.filter(asset => asset.category === activeTab)}
-              category={categories.find(cat => cat.id === activeTab)!}
-            />
-          )}
-        </main>
+        <DashboardView />
       </Layout>
     </Theme>
   );

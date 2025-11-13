@@ -67,7 +67,7 @@ export const ForgotPasswordSetNewPasswordForm: React.FC<IProps> = ({ onClose }) 
         className="w-full"
         error={errors.confirmPassword?.message}
       />
-      <Button type="submit" className="btn-primary w-full p-2">
+      <Button type="submit" className="btn-primary w-full p-2 bg-reddit-orange hover:bg-reddit-orange-dark border-none">
         Set New Password
       </Button>
     </form>

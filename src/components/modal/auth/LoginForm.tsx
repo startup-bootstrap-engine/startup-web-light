@@ -31,7 +31,7 @@ export const LoginForm: React.FC<ILoginFormProps> = ({ onSubmit, register, error
         className="w-full"
         error={errors.password?.message}
       />
-      <Button type="submit" className="btn-primary w-full p-2">
+      <Button type="submit" className="btn-primary w-full p-2 bg-reddit-orange hover:bg-reddit-orange-dark border-none">
         Sign In
       </Button>
     </form>
