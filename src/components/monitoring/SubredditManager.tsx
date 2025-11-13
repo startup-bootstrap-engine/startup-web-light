@@ -72,7 +72,7 @@ export const SubredditManager = (): JSX.Element => {
                     </span>
                   </div>
                   <div className="flex flex-wrap gap-2 mb-2">
-                    {subreddit.keywords.map((keyword, idx) => (
+                    {subreddit.keywords.map((keyword: string, idx: number) => (
                       <span
                         key={idx}
                         className="text-xs px-2 py-1 bg-purple-500/20 text-purple-300 rounded-full"

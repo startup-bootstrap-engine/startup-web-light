@@ -1,14 +1,21 @@
 import { create } from 'zustand';
-import { MonitoringStats, Opportunity, Subreddit } from '../types/monitoring';
+import { MonitoringStats, Opportunity, MonitoredSource } from '../types/monitoring';
 
 interface MonitoringState {
-  subreddits: Subreddit[];
+  sources: MonitoredSource[];
   opportunities: Opportunity[];
   stats: MonitoringStats;
 
-  // Subreddit actions (backward compatibility)
-  addSubreddit: (subreddit: Omit<Subreddit, 'id' | 'createdAt' | 'updatedAt'>) => void;
-  updateSubreddit: (id: string, updates: Partial<Subreddit>) => void;
+  // Source actions (new multi-platform)
+  addSource: (source: Omit<MonitoredSource, 'id' | 'createdAt' | 'updatedAt'>) => void;
+  updateSource: (id: string, updates: Partial<MonitoredSource>) => void;
+  removeSource: (id: string) => void;
+  toggleSource: (id: string) => void;
+
+  // Backward compatibility (legacy)
+  get subreddits(): any[];
+  addSubreddit: (subreddit: any) => void;
+  updateSubreddit: (id: string, updates: any) => void;
   removeSubreddit: (id: string) => void;
   toggleSubreddit: (id: string) => void;
 
@@ -21,13 +28,14 @@ interface MonitoringState {
   updateStats: (stats: Partial<MonitoringStats>) => void;
 }
 
-export const useMonitoringStore = create<MonitoringState>((set) => ({
-  subreddits: [
+export const useMonitoringStore = create<MonitoringState>((set, get) => ({
+  sources: [
     {
       id: '1',
-      name: 'webdev',
+      platform: 'reddit',
+      sourceIdentifier: 'webdev',
       keywords: ['portfolio', 'feedback', 'react', 'nextjs'],
-      minUpvotes: 10,
+      minEngagementScore: 10,
       minComments: 5,
       isActive: true,
       createdAt: new Date().toISOString(),
@@ -36,9 +44,10 @@ export const useMonitoringStore = create<MonitoringState>((set) => ({
     },
     {
       id: '2',
-      name: 'startups',
+      platform: 'reddit',
+      sourceIdentifier: 'startups',
       keywords: ['saas', 'tools', 'growth', 'mvp'],
-      minUpvotes: 20,
+      minEngagementScore: 20,
       minComments: 10,
       isActive: true,
       createdAt: new Date().toISOString(),
@@ -47,10 +56,23 @@ export const useMonitoringStore = create<MonitoringState>((set) => ({
     },
     {
       id: '3',
-      name: 'marketing',
-      keywords: ['seo', 'traffic', 'content', 'social media'],
-      minUpvotes: 15,
-      minComments: 8,
+      platform: 'hackernews',
+      sourceIdentifier: 'newest',
+      keywords: ['saas', 'startup', 'mvp'],
+      minEngagementScore: 50,
+      minComments: 5,
+      isActive: true,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      lastChecked: new Date().toISOString(),
+    },
+    {
+      id: '4',
+      platform: 'producthunt',
+      sourceIdentifier: 'dev-tools',
+      keywords: ['productivity', 'developer', 'tools'],
+      minEngagementScore: 30,
+      minComments: 3,
       isActive: true,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
@@ -90,28 +112,28 @@ export const useMonitoringStore = create<MonitoringState>((set) => ({
     {
       content: {
         id: '2',
-        platform: 'reddit',
-        externalContentId: 'def456',
-        sourceId: '2',
-        sourceName: 'startups',
+        platform: 'hackernews',
+        externalContentId: '38492813',
+        sourceId: '3',
+        sourceName: 'newest',
         contentType: 'post',
-        title: 'Best tools for early-stage SaaS?',
-        content: 'What tools do you recommend for a bootstrapped SaaS startup?',
-        author: 'founder_mike',
-        engagementScore: 67,
+        title: 'Show HN: Built a tool to monitor mentions across the web',
+        content: 'After struggling to track mentions of our product, I built this...',
+        author: 'hn_builder',
+        engagementScore: 127,
         commentCount: 45,
-        url: 'https://reddit.com/r/startups/comments/def456',
-        createdAt: new Date(Date.now() - 23 * 60000).toISOString(),
+        url: 'https://news.ycombinator.com/item?id=38492813',
+        createdAt: new Date(Date.now() - 2 * 60 * 60000).toISOString(),
         fetchedAt: new Date().toISOString(),
       },
       analysis: {
         id: 'a2',
         contentId: '2',
-        engagementStrategy: 'Share a comprehensive list of tools you use, position yours as part of the stack without being pushy',
-        brandOpportunity: 'High-intent founder actively building, looking for solutions',
-        recommendedAction: 'Provide 5-7 tool recommendations with brief explanations, include yours naturally in the list',
-        confidenceScore: 0.92,
-        priority: 'high',
+        engagementStrategy: 'Congratulate them on their launch and share how you solved similar problems in your implementation',
+        brandOpportunity: 'Direct competitor or complementary tool - engage authentically to build community goodwill',
+        recommendedAction: 'Share a genuine insight from your experience, possibly mention your approach as comparison',
+        confidenceScore: 0.73,
+        priority: 'medium',
         createdAt: new Date().toISOString(),
         isRead: false,
       },
@@ -119,27 +141,27 @@ export const useMonitoringStore = create<MonitoringState>((set) => ({
     {
       content: {
         id: '3',
-        platform: 'reddit',
-        externalContentId: 'ghi789',
-        sourceId: '3',
-        sourceName: 'marketing',
+        platform: 'producthunt',
+        externalContentId: 'dev-productivity-2024',
+        sourceId: '4',
+        sourceName: 'dev-tools',
         contentType: 'post',
-        title: 'How to grow organic traffic in 2024?',
-        content: 'My blog has been stagnant for months. What strategies are working for you?',
-        author: 'content_creator_jane',
+        title: 'What are your must-have developer tools in 2024?',
+        content: 'Looking to upgrade my dev stack. What tools do you swear by?',
+        author: 'product_hunter',
         engagementScore: 89,
-        commentCount: 56,
-        url: 'https://reddit.com/r/marketing/comments/ghi789',
-        createdAt: new Date(Date.now() - 1 * 60 * 60000).toISOString(),
+        commentCount: 67,
+        url: 'https://www.producthunt.com/discussions/dev-productivity-2024',
+        createdAt: new Date(Date.now() - 45 * 60000).toISOString(),
         fetchedAt: new Date().toISOString(),
       },
       analysis: {
         id: 'a3',
         contentId: '3',
-        engagementStrategy: 'Share 3-4 actionable SEO strategies that worked for you, build credibility before any mention',
-        brandOpportunity: 'Content creator struggling with growth - good fit for monitoring/analytics tools',
-        recommendedAction: 'Lead with value - share your best organic growth tactics, then mention tool in context',
-        confidenceScore: 0.78,
+        engagementStrategy: 'Share a thoughtful list of tools you actually use, positioning yours naturally among them',
+        brandOpportunity: 'High-intent user actively researching tools - perfect for authentic recommendation',
+        recommendedAction: 'Provide value first with 5-7 genuine recommendations, include yours as part of stack',
+        confidenceScore: 0.91,
         priority: 'high',
         createdAt: new Date().toISOString(),
         isRead: false,
@@ -147,18 +169,36 @@ export const useMonitoringStore = create<MonitoringState>((set) => ({
     },
   ],
   stats: {
-    activeMonitors: 3,
-    contentToday: 127,
-    opportunities: 8,
-    engaged: 12,
+    activeMonitors: 4,
+    contentToday: 247,
+    opportunities: 12,
+    engaged: 18,
+    statsByPlatform: {
+      reddit: {
+        activeMonitors: 2,
+        contentToday: 127,
+        opportunities: 5,
+      },
+      hackernews: {
+        activeMonitors: 1,
+        contentToday: 78,
+        opportunities: 4,
+      },
+      producthunt: {
+        activeMonitors: 1,
+        contentToday: 42,
+        opportunities: 3,
+      },
+    },
   },
 
-  addSubreddit: (subreddit) =>
+  // New multi-platform actions
+  addSource: (source) =>
     set((state) => ({
-      subreddits: [
-        ...state.subreddits,
+      sources: [
+        ...state.sources,
         {
-          ...subreddit,
+          ...source,
           id: Date.now().toString(),
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
@@ -166,42 +206,84 @@ export const useMonitoringStore = create<MonitoringState>((set) => ({
       ],
       stats: {
         ...state.stats,
-        activeMonitors: state.stats.activeMonitors + (subreddit.isActive ? 1 : 0),
+        activeMonitors: state.stats.activeMonitors + (source.isActive ? 1 : 0),
       },
     })),
 
-  updateSubreddit: (id, updates) =>
+  updateSource: (id, updates) =>
     set((state) => ({
-      subreddits: state.subreddits.map((sub) =>
-        sub.id === id ? { ...sub, ...updates } : sub
+      sources: state.sources.map((source) =>
+        source.id === id ? { ...source, ...updates, updatedAt: new Date().toISOString() } : source
       ),
     })),
 
-  removeSubreddit: (id) =>
+  removeSource: (id) =>
     set((state) => ({
-      subreddits: state.subreddits.filter((sub) => sub.id !== id),
+      sources: state.sources.filter((source) => source.id !== id),
       stats: {
         ...state.stats,
         activeMonitors: Math.max(
           0,
-          state.stats.activeMonitors -
-            (state.subreddits.find((s) => s.id === id)?.isActive ? 1 : 0)
+          state.stats.activeMonitors - (state.sources.find((s) => s.id === id)?.isActive ? 1 : 0)
         ),
       },
     })),
 
-  toggleSubreddit: (id) =>
+  toggleSource: (id) =>
     set((state) => ({
-      subreddits: state.subreddits.map((sub) =>
-        sub.id === id ? { ...sub, isActive: !sub.isActive } : sub
+      sources: state.sources.map((source) =>
+        source.id === id ? { ...source, isActive: !source.isActive } : source
       ),
       stats: {
         ...state.stats,
         activeMonitors:
-          state.stats.activeMonitors +
-          (state.subreddits.find((s) => s.id === id)?.isActive ? -1 : 1),
+          state.stats.activeMonitors + (state.sources.find((s) => s.id === id)?.isActive ? -1 : 1),
       },
     })),
+
+  // Backward compatibility getters and setters
+  get subreddits() {
+    return get().sources
+      .filter(s => s.platform === 'reddit')
+      .map(s => ({
+        id: s.id,
+        name: s.sourceIdentifier,
+        keywords: s.keywords,
+        minUpvotes: s.minEngagementScore,
+        minComments: s.minComments,
+        isActive: s.isActive,
+        createdAt: s.createdAt,
+        updatedAt: s.updatedAt,
+        lastChecked: s.lastChecked,
+      }));
+  },
+
+  addSubreddit: (subreddit) => {
+    get().addSource({
+      platform: 'reddit',
+      sourceIdentifier: subreddit.name,
+      keywords: subreddit.keywords,
+      minEngagementScore: subreddit.minUpvotes,
+      minComments: subreddit.minComments,
+      isActive: subreddit.isActive,
+    });
+  },
+
+  updateSubreddit: (id, updates) => {
+    get().updateSource(id, {
+      ...(updates.name && { sourceIdentifier: updates.name }),
+      ...(updates.minUpvotes !== undefined && { minEngagementScore: updates.minUpvotes }),
+      ...updates,
+    });
+  },
+
+  removeSubreddit: (id) => {
+    get().removeSource(id);
+  },
+
+  toggleSubreddit: (id) => {
+    get().toggleSource(id);
+  },
 
   addOpportunity: (opportunity) =>
     set((state) => ({
@@ -223,9 +305,7 @@ export const useMonitoringStore = create<MonitoringState>((set) => ({
 
   removeOpportunity: (analysisId) =>
     set((state) => ({
-      opportunities: state.opportunities.filter(
-        (opp) => opp.analysis.id !== analysisId
-      ),
+      opportunities: state.opportunities.filter((opp) => opp.analysis.id !== analysisId),
     })),
 
   updateStats: (stats) =>

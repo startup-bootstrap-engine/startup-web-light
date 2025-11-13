@@ -2,7 +2,7 @@ import { Bell, MessageSquare, Sparkles, TrendingUp } from 'lucide-react';
 import { JSX, useEffect, useState } from 'react';
 import { OpportunitiesFeed } from '../components/monitoring/OpportunitiesFeed';
 import { StatsOverview } from '../components/monitoring/StatsOverview';
-import { SubredditManager } from '../components/monitoring/SubredditManager';
+import { SourceManager } from '../components/monitoring/SourceManager';
 import { useAuthStore } from '../store/authStore';
 import { useModalStore } from '../store/modalStore';
 
@@ -57,15 +57,15 @@ const LandingHero = ({ animationOffset }: LandingHeroProps): JSX.Element => {
 
         {/* Main Heading */}
         <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold mb-6 animate-fade-in-up">
-          Track trending Reddit posts with
+          Monitor conversations across
           <span className="block mt-2 bg-gradient-to-r from-reddit-orange via-pink-500 to-purple-500 bg-clip-text text-transparent">
-            AI-powered insights
+            multiple platforms
           </span>
         </h1>
 
         {/* Subheading */}
         <p className="text-xl sm:text-2xl text-gray-300 mb-12 max-w-3xl mx-auto animate-fade-in-up animation-delay-200">
-          Auto-monitor subreddits, analyze conversations with AI, and discover authentic engagement opportunities.
+          Track Reddit, Hacker News, Product Hunt, and more. Get AI-powered engagement strategies for authentic opportunities.
         </p>
 
         {/* CTA Buttons */}
@@ -144,18 +144,18 @@ const MonitoringDashboard = (): JSX.Element => {
   return (
     <div className="animate-fade-in">
       {/* Dashboard Header */}
-      <div className="mb-8">
-        <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-reddit-orange via-pink-500 to-purple-500 bg-clip-text text-transparent">
-          Reddit Monitor Dashboard
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold mb-1 text-white">
+          Dashboard
         </h1>
-        <p className="text-gray-400">Track and engage with Reddit opportunities in real-time</p>
+        <p className="text-gray-400 text-sm">Track opportunities across multiple platforms</p>
       </div>
 
       {/* Navigation Tabs */}
-      <div className="flex gap-2 mb-8 border-b border-white/10 pb-4">
+      <div className="flex gap-2 mb-6 border-b border-white/10 pb-3">
         <button
           onClick={() => setActiveTab('overview')}
-          className={`px-4 py-2 rounded-lg font-semibold transition-all ${
+          className={`px-3 py-1.5 rounded text-sm font-medium transition-all ${
             activeTab === 'overview'
               ? 'bg-reddit-orange text-white'
               : 'text-gray-400 hover:text-white hover:bg-white/5'
@@ -165,7 +165,7 @@ const MonitoringDashboard = (): JSX.Element => {
         </button>
         <button
           onClick={() => setActiveTab('opportunities')}
-          className={`px-4 py-2 rounded-lg font-semibold transition-all ${
+          className={`px-3 py-1.5 rounded text-sm font-medium transition-all ${
             activeTab === 'opportunities'
               ? 'bg-reddit-orange text-white'
               : 'text-gray-400 hover:text-white hover:bg-white/5'
@@ -175,13 +175,13 @@ const MonitoringDashboard = (): JSX.Element => {
         </button>
         <button
           onClick={() => setActiveTab('monitors')}
-          className={`px-4 py-2 rounded-lg font-semibold transition-all ${
+          className={`px-3 py-1.5 rounded text-sm font-medium transition-all ${
             activeTab === 'monitors'
               ? 'bg-reddit-orange text-white'
               : 'text-gray-400 hover:text-white hover:bg-white/5'
           }`}
         >
-          Subreddit Monitors
+          Monitors
         </button>
       </div>
 
@@ -195,11 +195,9 @@ const MonitoringDashboard = (): JSX.Element => {
 
 const OverviewTab = (): JSX.Element => {
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       <StatsOverview />
-      <div className="grid md:grid-cols-2 gap-6">
-        <OpportunitiesFeed />
-      </div>
+      <OpportunitiesFeed />
     </div>
   );
 };
@@ -215,7 +213,7 @@ const OpportunitiesTab = (): JSX.Element => {
 const MonitorsTab = (): JSX.Element => {
   return (
     <div>
-      <SubredditManager />
+      <SourceManager />
     </div>
   );
 };

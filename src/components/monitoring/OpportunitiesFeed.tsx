@@ -1,38 +1,40 @@
 import { ArrowUpRight, Check, Copy, ExternalLink, Sparkles, TrendingUp, X } from 'lucide-react';
 import { JSX, useState } from 'react';
 import { useMonitoringStore } from '../../store/monitoringStore';
-import { Opportunity } from '../../types/monitoring';
+import { Opportunity, Platform, PLATFORM_DISPLAY_NAMES, PLATFORM_ICONS, getEngagementLabel, getContentUrl } from '../../types/monitoring';
 
 export const OpportunitiesFeed = (): JSX.Element => {
   const { opportunities, markOpportunityAsRead, removeOpportunity, stats } = useMonitoringStore();
   const [selectedOpp, setSelectedOpp] = useState<Opportunity | null>(null);
   const [filter, setFilter] = useState<'all' | 'high' | 'medium' | 'low'>('all');
+  const [platformFilter, setPlatformFilter] = useState<Platform | 'all'>('all');
 
   const filteredOpportunities = opportunities.filter(
-    (opp) => filter === 'all' || opp.analysis.priority === filter
+    (opp) =>
+      (filter === 'all' || opp.analysis.priority === filter) &&
+      (platformFilter === 'all' || opp.content.platform === platformFilter)
   );
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold flex items-center gap-2">
-            <Sparkles className="w-6 h-6 text-reddit-orange" />
+          <h2 className="text-xl font-bold text-white">
             Opportunities
           </h2>
-          <p className="text-gray-400 text-sm mt-1">
-            {stats.opportunities} opportunities found today
+          <p className="text-gray-400 text-xs mt-1">
+            {stats.opportunities} found today
           </p>
         </div>
 
-        {/* Filter */}
-        <div className="flex gap-2">
+        {/* Filters */}
+        <div className="flex gap-2 flex-wrap items-center">
           {(['all', 'high', 'medium', 'low'] as const).map((priority) => (
             <button
               key={priority}
               onClick={() => setFilter(priority)}
-              className={`px-3 py-1.5 rounded-lg text-sm transition-all ${
+              className={`px-2.5 py-1 rounded text-xs transition-all ${
                 filter === priority
                   ? 'bg-reddit-orange text-white'
                   : 'bg-white/5 text-gray-400 hover:bg-white/10'
@@ -41,17 +43,40 @@ export const OpportunitiesFeed = (): JSX.Element => {
               {priority.charAt(0).toUpperCase() + priority.slice(1)}
             </button>
           ))}
+          <div className="w-px h-4 bg-white/10"></div>
+          <button
+            onClick={() => setPlatformFilter('all')}
+            className={`px-2.5 py-1 rounded text-xs transition-all ${
+              platformFilter === 'all'
+                ? 'bg-purple-600 text-white'
+                : 'bg-white/5 text-gray-400 hover:bg-white/10'
+            }`}
+          >
+            All
+          </button>
+          {(Object.keys(PLATFORM_DISPLAY_NAMES) as Platform[]).map((platform) => (
+            <button
+              key={platform}
+              onClick={() => setPlatformFilter(platform)}
+              className={`px-2.5 py-1 rounded text-xs transition-all ${
+                platformFilter === platform
+                  ? 'bg-purple-600 text-white'
+                  : 'bg-white/5 text-gray-400 hover:bg-white/10'
+              }`}
+            >
+              {PLATFORM_DISPLAY_NAMES[platform]}
+            </button>
+          ))}
         </div>
       </div>
 
       {/* Opportunities List */}
-      <div className="space-y-4">
+      <div className="space-y-3">
         {filteredOpportunities.length === 0 ? (
-          <div className="bg-white/5 border border-white/10 rounded-2xl p-12 text-center">
-            <Sparkles className="w-12 h-12 text-gray-500 mx-auto mb-4" />
-            <p className="text-gray-400">No opportunities found</p>
-            <p className="text-sm text-gray-500 mt-2">
-              Opportunities will appear here when relevant posts are detected
+          <div className="bg-white/5 border border-white/10 rounded-lg p-8 text-center">
+            <p className="text-gray-400 text-sm">No opportunities found</p>
+            <p className="text-xs text-gray-500 mt-1">
+              Opportunities will appear when relevant content is detected
             </p>
           </div>
         ) : (
@@ -112,80 +137,81 @@ const OpportunityCard = ({
 
   return (
     <div
-      className={`bg-white/5 border rounded-xl p-5 hover:bg-white/10 transition-all cursor-pointer ${
+      className={`bg-white/5 border rounded-lg p-3 hover:bg-white/10 transition-all cursor-pointer ${
         analysis.isRead ? 'opacity-60' : ''
       }`}
       onClick={onView}
     >
       {/* Header */}
-      <div className="flex items-start justify-between mb-3">
-        <div className="flex-1">
+      <div className="flex items-start justify-between mb-2">
+        <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
-            <span className="text-sm text-purple-400 font-medium">r/{content.sourceName}</span>
+            <span className="text-xs px-2 py-0.5 bg-white/10 text-gray-400 rounded">
+              {PLATFORM_DISPLAY_NAMES[content.platform]}
+            </span>
+            <span className="text-xs text-gray-400">{content.sourceName}</span>
             <span className="text-xs text-gray-500">{formatTimeAgo(content.createdAt)}</span>
             {!analysis.isRead && (
-              <span className="w-2 h-2 bg-reddit-orange rounded-full animate-pulse"></span>
+              <span className="w-1.5 h-1.5 bg-reddit-orange rounded-full"></span>
             )}
           </div>
-          <h3 className="font-semibold text-white mb-2 line-clamp-2">{content.title}</h3>
+          <h3 className="font-medium text-white text-sm mb-1 line-clamp-2">{content.title}</h3>
+          <div className="flex items-center gap-3 text-xs text-gray-400">
+            <span className="flex items-center gap-1">
+              <ArrowUpRight className="w-3 h-3" />
+              {content.engagementScore}
+            </span>
+            <span>{content.commentCount} comments</span>
+            <span>by {content.author}</span>
+          </div>
         </div>
-        <div className="flex gap-1 ml-4">
+        <div className="flex gap-1 ml-3">
           <button
             onClick={(e) => {
               e.stopPropagation();
               onMarkRead();
             }}
-            className="p-2 hover:bg-white/10 rounded-lg transition-colors"
+            className="p-1.5 hover:bg-white/10 rounded transition-colors"
           >
-            <Check className="w-4 h-4 text-green-400" />
+            <Check className="w-3.5 h-3.5 text-green-400" />
           </button>
           <button
             onClick={(e) => {
               e.stopPropagation();
               onRemove();
             }}
-            className="p-2 hover:bg-red-500/20 rounded-lg transition-colors"
+            className="p-1.5 hover:bg-red-500/20 rounded transition-colors"
           >
-            <X className="w-4 h-4 text-red-400" />
+            <X className="w-3.5 h-3.5 text-red-400" />
           </button>
         </div>
       </div>
 
-      {/* Stats */}
-      <div className="flex items-center gap-4 mb-3 text-xs text-gray-400">
-        <span className="flex items-center gap-1">
-          <ArrowUpRight className="w-3 h-3" />
-          {content.engagementScore} upvotes
-        </span>
-        <span>{content.commentCount} comments</span>
-        <span>by u/{content.author}</span>
-      </div>
-
       {/* AI Analysis Preview */}
-      <div className="bg-white/5 rounded-lg p-3 mb-3">
-        <p className="text-sm text-gray-300 line-clamp-2">{analysis.engagementStrategy}</p>
+      <div className="bg-white/5 rounded p-2 mb-2">
+        <p className="text-xs text-gray-300 line-clamp-2">{analysis.engagementStrategy}</p>
       </div>
 
       {/* Footer */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <span
-            className={`text-xs px-3 py-1 rounded-full border ${priorityColors[analysis.priority]}`}
+            className={`text-xs px-2 py-0.5 rounded border ${priorityColors[analysis.priority]}`}
           >
-            {analysis.priority.toUpperCase()} Priority
+            {analysis.priority.toUpperCase()}
           </span>
           <span className="text-xs text-gray-500">
-            {Math.round(analysis.confidenceScore * 100)}% confidence
+            {Math.round(analysis.confidenceScore * 100)}%
           </span>
         </div>
         <a
-          href={content.url}
+          href={getContentUrl(content)}
           target="_blank"
           rel="noopener noreferrer"
           onClick={(e) => e.stopPropagation()}
-          className="text-sm text-reddit-orange hover:underline flex items-center gap-1"
+          className="text-xs text-reddit-orange hover:underline flex items-center gap-1"
         >
-          View Post
+          View
           <ExternalLink className="w-3 h-3" />
         </a>
       </div>
@@ -221,7 +247,11 @@ const OpportunityDetailModal = ({
         <div className="flex items-start justify-between mb-6">
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-2">
-              <span className="text-sm text-purple-400 font-medium">r/{content.sourceName}</span>
+              <span className="text-2xl">{PLATFORM_ICONS[content.platform]}</span>
+              <span className="text-sm text-purple-400 font-medium">{content.sourceName}</span>
+              <span className="text-xs px-2 py-1 bg-white/10 text-gray-400 rounded-full">
+                {PLATFORM_DISPLAY_NAMES[content.platform]}
+              </span>
               <span
                 className={`text-xs px-2 py-1 rounded-full ${
                   analysis.priority === 'high'
@@ -238,10 +268,10 @@ const OpportunityDetailModal = ({
             <div className="flex items-center gap-4 text-sm text-gray-400">
               <span className="flex items-center gap-1">
                 <TrendingUp className="w-4 h-4" />
-                {content.engagementScore} upvotes
+                {content.engagementScore} {getEngagementLabel(content.platform).toLowerCase()}
               </span>
               <span>{content.commentCount} comments</span>
-              <span>by u/{content.author}</span>
+              <span>by {content.author}</span>
             </div>
           </div>
           <button
@@ -307,13 +337,13 @@ const OpportunityDetailModal = ({
         {/* Actions */}
         <div className="flex gap-3">
           <a
-            href={content.url}
+            href={getContentUrl(content)}
             target="_blank"
             rel="noopener noreferrer"
             className="flex-1 bg-reddit-orange hover:bg-reddit-orange-dark px-6 py-3 rounded-lg font-semibold transition-all flex items-center justify-center gap-2"
           >
             <ExternalLink className="w-5 h-5" />
-            Open Reddit Post
+            Open on {PLATFORM_DISPLAY_NAMES[content.platform]}
           </a>
           <button
             onClick={onMarkRead}
