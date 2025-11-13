@@ -3,8 +3,11 @@ import { JSX, useEffect, useState } from 'react';
 import { OpportunitiesFeed } from '../components/monitoring/OpportunitiesFeed';
 import { StatsOverview } from '../components/monitoring/StatsOverview';
 import { SourceManager } from '../components/monitoring/SourceManager';
+import { AnalyticsDashboard } from '../components/monitoring/AnalyticsDashboard';
+import { RealtimeStatus } from '../components/monitoring/RealtimeStatus';
 import { useAuthStore } from '../store/authStore';
 import { useModalStore } from '../store/modalStore';
+import { useRealtimeOpportunities } from '../hooks/useRealtimeOpportunities';
 
 export const DashboardView = (): JSX.Element => {
   const { isAuthenticated } = useAuthStore();
@@ -139,16 +142,20 @@ const FeatureCard = ({ icon, title, description }: FeatureCardProps): JSX.Elemen
 };
 
 const MonitoringDashboard = (): JSX.Element => {
-  const [activeTab, setActiveTab] = useState<'overview' | 'opportunities' | 'monitors'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'opportunities' | 'monitors' | 'analytics'>('overview');
+  const realtimeStatus = useRealtimeOpportunities();
 
   return (
     <div className="animate-fade-in">
       {/* Dashboard Header */}
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold mb-1 text-white">
-          Dashboard
-        </h1>
-        <p className="text-gray-400 text-sm">Track opportunities across multiple platforms</p>
+      <div className="mb-6 flex items-start justify-between">
+        <div>
+          <h1 className="text-2xl font-bold mb-1 text-white">
+            Dashboard
+          </h1>
+          <p className="text-gray-400 text-sm">Track opportunities across multiple platforms</p>
+        </div>
+        <RealtimeStatus status={realtimeStatus} />
       </div>
 
       {/* Navigation Tabs */}
@@ -183,12 +190,23 @@ const MonitoringDashboard = (): JSX.Element => {
         >
           Monitors
         </button>
+        <button
+          onClick={() => setActiveTab('analytics')}
+          className={`px-3 py-1.5 rounded text-sm font-medium transition-all ${
+            activeTab === 'analytics'
+              ? 'bg-reddit-orange text-white'
+              : 'text-gray-400 hover:text-white hover:bg-white/5'
+          }`}
+        >
+          Analytics
+        </button>
       </div>
 
       {/* Tab Content */}
       {activeTab === 'overview' && <OverviewTab />}
       {activeTab === 'opportunities' && <OpportunitiesTab />}
       {activeTab === 'monitors' && <MonitorsTab />}
+      {activeTab === 'analytics' && <AnalyticsTab />}
     </div>
   );
 };
@@ -214,6 +232,14 @@ const MonitorsTab = (): JSX.Element => {
   return (
     <div>
       <SourceManager />
+    </div>
+  );
+};
+
+const AnalyticsTab = (): JSX.Element => {
+  return (
+    <div>
+      <AnalyticsDashboard />
     </div>
   );
 };

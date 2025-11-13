@@ -88,22 +88,22 @@ This roadmap outlines the development phases for building the Multi-Platform Com
 - [x] Add search across all platforms
 
 ### 2.4 Realtime Features
-- [ ] Subscribe to Supabase Realtime on `ai_analysis` table
-- [ ] Implement live notifications feed
-- [ ] Add real-time UI updates for new analyses
-- [ ] Show connection status indicator
+- [x] Subscribe to Supabase Realtime on `ai_analysis` table
+- [x] Implement live notifications feed
+- [x] Add real-time UI updates for new analyses
+- [x] Show connection status indicator
 
 ### 2.5 Analytics Dashboard
-- [ ] Track engagement success rate (overall and per-platform)
-- [ ] Monitor brand mention growth
-- [ ] Display source activity metrics with **platform breakdown**:
-  - Content discovered per platform
-  - Average engagement score per platform
-  - Opportunities generated per platform
-- [ ] Show AI confidence score trends
-- [ ] Add date range filtering
-- [ ] **Platform comparison charts** (bar chart, pie chart)
-- [ ] Performance leaderboard by platform
+- [x] Track engagement success rate (overall and per-platform)
+- [x] Monitor brand mention growth
+- [x] Display source activity metrics with **platform breakdown**:
+  - [x] Content discovered per platform
+  - [x] Average engagement score per platform
+  - [x] Opportunities generated per platform
+- [x] Show AI confidence score trends
+- [x] Add date range filtering
+- [x] **Platform comparison charts** (bar chart, pie chart)
+- [x] Performance leaderboard by platform
 
 ---
 
