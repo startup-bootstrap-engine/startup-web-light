@@ -20,5 +20,7 @@ export const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET || '';
 
 // Validate webhook secret in production
 if (process.env.NODE_ENV === 'production' && !STRIPE_WEBHOOK_SECRET) {
-  console.warn('Warning: STRIPE_WEBHOOK_SECRET is not set. Webhook signature verification will fail.');
+  console.warn(
+    'Warning: STRIPE_WEBHOOK_SECRET is not set. Webhook signature verification will fail.'
+  );
 }

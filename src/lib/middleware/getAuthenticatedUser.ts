@@ -22,7 +22,7 @@ import { NextRequest } from 'next/server';
  * }
  * ```
  */
-export async function getAuthenticatedUser(req: NextRequest) {
+export async function getAuthenticatedUser(req: NextRequest): Promise<IUserProfile | null> {
   const userId = req.headers.get('X-User-Id');
 
   if (!userId) {
@@ -49,7 +49,7 @@ export async function getAuthenticatedUser(req: NextRequest) {
  * Type definition for user profile
  * Update this based on your actual profiles table schema
  */
-export interface UserProfile {
+export interface IUserProfile {
   id: string;
   email?: string;
   created_at?: string;

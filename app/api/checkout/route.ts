@@ -1,14 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { stripe } from '@/lib/stripe/config';
 import { supabaseAdmin } from '@/lib/supabase/supabaseAdmin';
-import type { CheckoutSessionRequest } from '@/lib/stripe/types';
+import type { ICheckoutSessionRequest } from '@/lib/stripe/types';
 
 export const runtime = 'edge'; // Cloudflare Worker compatible
 
 export async function POST(request: NextRequest) {
   try {
     // 1. Get the request body
-    const body: CheckoutSessionRequest = await request.json();
+    const body: ICheckoutSessionRequest = await request.json();
     const { priceId, successUrl, cancelUrl, metadata = {} } = body;
 
     if (!priceId) {
@@ -95,10 +95,11 @@ export async function POST(request: NextRequest) {
       url: session.url,
       sessionId: session.id,
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Checkout error:', error);
+    const errorMessage = error instanceof Error ? error.message : 'An error occurred during checkout';
     return NextResponse.json(
-      { error: error.message || 'An error occurred during checkout' },
+      { error: errorMessage },
       { status: 500 }
     );
   }

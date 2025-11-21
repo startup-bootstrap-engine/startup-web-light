@@ -50,11 +50,11 @@ export interface IPortfolioStats {
 // Re-export Stripe types for convenience
 export type {
   SubscriptionStatus,
-  UserProfile,
-  Subscription,
-  Product,
-  Price,
-  CheckoutSessionRequest,
-  CheckoutSessionResponse,
-  CreditsPackage,
+  IUserProfile,
+  ISubscription,
+  IProduct,
+  IPrice,
+  ICheckoutSessionRequest,
+  ICheckoutSessionResponse,
+  ICreditsPackage,
 } from './lib/stripe/types';

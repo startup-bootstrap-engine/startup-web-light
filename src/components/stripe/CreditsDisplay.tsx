@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { StripeService } from '@/lib/stripe';
-import type { UserProfile } from '@/lib/stripe/types';
+import type { IUserProfile } from '@/lib/stripe/types';
 
 /**
  * Component to display user's current credits balance
@@ -12,8 +12,8 @@ import type { UserProfile } from '@/lib/stripe/types';
  * <CreditsDisplay />
  * ```
  */
-export function CreditsDisplay() {
-  const [profile, setProfile] = useState<UserProfile | null>(null);
+export function CreditsDisplay(): JSX.Element {
+  const [profile, setProfile] = useState<IUserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -27,8 +27,9 @@ export function CreditsDisplay() {
       const data = await StripeService.getUserProfile();
       setProfile(data);
       setError(null);
-    } catch (err: any) {
-      setError(err.message || 'Failed to load profile');
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to load profile';
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -44,11 +45,7 @@ export function CreditsDisplay() {
   }
 
   if (error) {
-    return (
-      <div className="text-error text-sm">
-        Error: {error}
-      </div>
-    );
+    return <div className="text-error text-sm">Error: {error}</div>;
   }
 
   return (
@@ -67,15 +64,9 @@ export function CreditsDisplay() {
           d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
         />
       </svg>
-      <span className="font-semibold text-lg">
-        {profile?.credits_balance || 0}
-      </span>
+      <span className="font-semibold text-lg">{profile?.credits_balance || 0}</span>
       <span className="text-sm text-base-content/70">credits</span>
-      <button
-        onClick={loadProfile}
-        className="btn btn-ghost btn-xs"
-        title="Refresh credits"
-      >
+      <button onClick={loadProfile} className="btn btn-ghost btn-xs" title="Refresh credits">
         ↻
       </button>
     </div>

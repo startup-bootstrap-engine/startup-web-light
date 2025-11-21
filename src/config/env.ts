@@ -16,18 +16,13 @@ export function loadEnv(): Env {
   // These are safe to expose to the browser (anon keys, public URLs, etc.)
   const env = {
     APP_NAME: process.env.NEXT_PUBLIC_APP_NAME || 'PixelPerfect',
-    SUPABASE_URL:
-      process.env.NEXT_PUBLIC_SUPABASE_URL ||
-      'https://example.supabase.co',
+    SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://example.supabase.co',
     SUPABASE_ANON_KEY:
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV4YW1wbGUiLCJyb2xlIjoiYW5vbiIsImlhdCI6MTYxMjI4MDY4MywiZXhwIjoxOTI3ODU2NjgzfQ.dummy',
-    GOOGLE_CLIENT_ID:
-      process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || '',
-    FACEBOOK_CLIENT_ID:
-      process.env.NEXT_PUBLIC_FACEBOOK_CLIENT_ID || '',
-    AZURE_CLIENT_ID:
-      process.env.NEXT_PUBLIC_AZURE_CLIENT_ID || '',
+    GOOGLE_CLIENT_ID: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || '',
+    FACEBOOK_CLIENT_ID: process.env.NEXT_PUBLIC_FACEBOOK_CLIENT_ID || '',
+    AZURE_CLIENT_ID: process.env.NEXT_PUBLIC_AZURE_CLIENT_ID || '',
   };
   return envSchema.parse(env);
 }

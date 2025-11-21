@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { StripeService } from '@/lib/stripe';
 
-interface PricingCardProps {
+interface IPricingCardProps {
   name: string;
   description?: string;
   price: number;
@@ -41,33 +41,28 @@ export function PricingCard({
   priceId,
   recommended = false,
   creditsAmount,
-}: PricingCardProps) {
+}: IPricingCardProps): JSX.Element {
   const [loading, setLoading] = useState(false);
 
   const handleSubscribe = async () => {
     try {
       setLoading(true);
       await StripeService.redirectToCheckout(priceId, {
-        metadata: creditsAmount
-          ? { credits_amount: creditsAmount.toString() }
-          : {},
+        metadata: creditsAmount ? { credits_amount: creditsAmount.toString() } : {},
         successUrl: `${window.location.origin}/success`,
         cancelUrl: window.location.href,
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Checkout error:', error);
-      alert(error.message || 'Failed to initiate checkout');
+      const errorMessage = error instanceof Error ? error.message : 'Failed to initiate checkout';
+      alert(errorMessage);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div
-      className={`card bg-base-100 shadow-xl ${
-        recommended ? 'border-2 border-primary' : ''
-      }`}
-    >
+    <div className={`card bg-base-100 shadow-xl ${recommended ? 'border-2 border-primary' : ''}`}>
       {recommended && (
         <div className="badge badge-primary absolute -top-3 left-1/2 -translate-x-1/2">
           Recommended
@@ -75,24 +70,16 @@ export function PricingCard({
       )}
       <div className="card-body">
         <h2 className="card-title justify-center text-2xl">{name}</h2>
-        {description && (
-          <p className="text-center text-sm text-base-content/70">
-            {description}
-          </p>
-        )}
+        {description && <p className="text-center text-sm text-base-content/70">{description}</p>}
 
         <div className="text-center my-4">
           <div className="text-4xl font-bold">
             {currency === 'USD' ? '$' : currency}
             {price}
           </div>
-          {interval && (
-            <div className="text-sm text-base-content/70">per {interval}</div>
-          )}
+          {interval && <div className="text-sm text-base-content/70">per {interval}</div>}
           {creditsAmount && (
-            <div className="text-sm text-base-content/70 mt-1">
-              {creditsAmount} credits
-            </div>
+            <div className="text-sm text-base-content/70 mt-1">{creditsAmount} credits</div>
           )}
         </div>
 

@@ -8,30 +8,33 @@
  * using Cloudflare KV or Durable Objects.
  */
 
-interface RateLimitEntry {
+interface IRateLimitEntry {
   timestamps: number[];
 }
 
 // In-memory storage for rate limit tracking
-const rateLimitStore = new Map<string, RateLimitEntry>();
+const rateLimitStore = new Map<string, IRateLimitEntry>();
 
 // Cleanup old entries every 5 minutes to prevent memory leaks
-setInterval(() => {
-  const now = Date.now();
-  const fiveMinutesAgo = now - 5 * 60 * 1000;
+setInterval(
+  () => {
+    const now = Date.now();
+    const fiveMinutesAgo = now - 5 * 60 * 1000;
 
-  for (const [key, entry] of rateLimitStore.entries()) {
-    // Remove timestamps older than 5 minutes
-    entry.timestamps = entry.timestamps.filter((t) => t > fiveMinutesAgo);
+    for (const [key, entry] of rateLimitStore.entries()) {
+      // Remove timestamps older than 5 minutes
+      entry.timestamps = entry.timestamps.filter(t => t > fiveMinutesAgo);
 
-    // Remove entry if no recent timestamps
-    if (entry.timestamps.length === 0) {
-      rateLimitStore.delete(key);
+      // Remove entry if no recent timestamps
+      if (entry.timestamps.length === 0) {
+        rateLimitStore.delete(key);
+      }
     }
-  }
-}, 5 * 60 * 1000); // Every 5 minutes
+  },
+  5 * 60 * 1000
+); // Every 5 minutes
 
-interface RateLimitResult {
+interface IRateLimitResult {
   success: boolean;
   remaining: number;
   reset: number;
@@ -46,7 +49,7 @@ interface RateLimitResult {
  * @returns Rate limit result with success status, remaining count, and reset time
  */
 function createRateLimiter(limit: number, windowMs: number) {
-  return async (identifier: string): Promise<RateLimitResult> => {
+  return async (identifier: string): Promise<IRateLimitResult> => {
     const now = Date.now();
     const windowStart = now - windowMs;
 
@@ -58,7 +61,7 @@ function createRateLimiter(limit: number, windowMs: number) {
     }
 
     // Remove timestamps outside the current window
-    entry.timestamps = entry.timestamps.filter((t) => t > windowStart);
+    entry.timestamps = entry.timestamps.filter(t => t > windowStart);
 
     // Check if limit exceeded
     if (entry.timestamps.length >= limit) {

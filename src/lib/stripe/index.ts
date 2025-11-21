@@ -2,11 +2,11 @@
 export { StripeService } from './stripeService';
 export type {
   SubscriptionStatus,
-  UserProfile,
-  Subscription,
-  Product,
-  Price,
-  CheckoutSessionRequest,
-  CheckoutSessionResponse,
-  CreditsPackage,
+  IUserProfile,
+  ISubscription,
+  IProduct,
+  IPrice,
+  ICheckoutSessionRequest,
+  ICheckoutSessionResponse,
+  ICreditsPackage,
 } from './types';

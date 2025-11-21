@@ -1,11 +1,11 @@
 import { supabase } from '../supabase/supabaseClient';
 import type {
-  CheckoutSessionRequest,
-  CheckoutSessionResponse,
-  UserProfile,
-  Subscription,
-  Price,
-  Product,
+  ICheckoutSessionRequest,
+  ICheckoutSessionResponse,
+  IUserProfile,
+  ISubscription,
+  IPrice,
+  IProduct,
 } from './types';
 
 /**
@@ -26,7 +26,7 @@ export class StripeService {
       cancelUrl?: string;
       metadata?: Record<string, string>;
     }
-  ): Promise<CheckoutSessionResponse> {
+  ): Promise<ICheckoutSessionResponse> {
     const {
       data: { session },
     } = await supabase.auth.getSession();
@@ -35,7 +35,7 @@ export class StripeService {
       throw new Error('User not authenticated');
     }
 
-    const request: CheckoutSessionRequest = {
+    const request: ICheckoutSessionRequest = {
       priceId,
       successUrl: options?.successUrl,
       cancelUrl: options?.cancelUrl,
@@ -56,7 +56,7 @@ export class StripeService {
       throw new Error(error.error || 'Failed to create checkout session');
     }
 
-    const data: CheckoutSessionResponse = await response.json();
+    const data: ICheckoutSessionResponse = await response.json();
     return data;
   }
 
@@ -81,7 +81,7 @@ export class StripeService {
    * Get the current user's profile
    * @returns The user's profile with credits and subscription info
    */
-  static async getUserProfile(): Promise<UserProfile | null> {
+  static async getUserProfile(): Promise<IUserProfile | null> {
     const {
       data: { user },
     } = await supabase.auth.getUser();
@@ -90,11 +90,7 @@ export class StripeService {
       return null;
     }
 
-    const { data, error } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', user.id)
-      .single();
+    const { data, error } = await supabase.from('profiles').select('*').eq('id', user.id).single();
 
     if (error) {
       console.error('Error fetching profile:', error);
@@ -108,7 +104,7 @@ export class StripeService {
    * Get the user's active subscription
    * @returns The user's active subscription or null
    */
-  static async getActiveSubscription(): Promise<Subscription | null> {
+  static async getActiveSubscription(): Promise<ISubscription | null> {
     const {
       data: { user },
     } = await supabase.auth.getUser();
@@ -138,9 +134,7 @@ export class StripeService {
    * Get all available prices with their products
    * @returns List of prices with product details
    */
-  static async getAvailablePrices(): Promise<
-    (Price & { product: Product })[]
-  > {
+  static async getAvailablePrices(): Promise<(IPrice & { product: IProduct })[]> {
     const { data, error } = await supabase
       .from('prices')
       .select(
@@ -157,7 +151,7 @@ export class StripeService {
       return [];
     }
 
-    return data as any;
+    return data as (IPrice & { product: IProduct })[];
   }
 
   /**
@@ -167,7 +161,7 @@ export class StripeService {
    */
   static async getPricesByType(
     type: 'one_time' | 'recurring'
-  ): Promise<(Price & { product: Product })[]> {
+  ): Promise<(IPrice & { product: IProduct })[]> {
     const { data, error } = await supabase
       .from('prices')
       .select(
@@ -185,7 +179,7 @@ export class StripeService {
       return [];
     }
 
-    return data as any;
+    return data as (IPrice & { product: IProduct })[];
   }
 
   /**
@@ -193,9 +187,7 @@ export class StripeService {
    * @param requiredAmount - The number of credits required
    * @returns True if the user has sufficient credits
    */
-  static async hasSufficientCredits(
-    requiredAmount: number
-  ): Promise<boolean> {
+  static async hasSufficientCredits(requiredAmount: number): Promise<boolean> {
     const {
       data: { user },
     } = await supabase.auth.getUser();

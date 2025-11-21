@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { StripeService } from '@/lib/stripe';
-import type { Subscription, UserProfile } from '@/lib/stripe/types';
+import type { ISubscription, IUserProfile } from '@/lib/stripe/types';
 
 /**
  * Component to display user's current subscription status
@@ -12,9 +12,9 @@ import type { Subscription, UserProfile } from '@/lib/stripe/types';
  * <SubscriptionStatus />
  * ```
  */
-export function SubscriptionStatus() {
-  const [subscription, setSubscription] = useState<Subscription | null>(null);
-  const [profile, setProfile] = useState<UserProfile | null>(null);
+export function SubscriptionStatus(): JSX.Element {
+  const [subscription, setSubscription] = useState<ISubscription | null>(null);
+  const [profile, setProfile] = useState<IUserProfile | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -56,7 +56,7 @@ export function SubscriptionStatus() {
         <div className="card-body">
           <h2 className="card-title">No Active Subscription</h2>
           <p className="text-base-content/70">
-            You don't have an active subscription. Browse our plans to get started!
+            You don&apos;t have an active subscription. Browse our plans to get started!
           </p>
           <div className="card-actions justify-end">
             <a href="/pricing" className="btn btn-primary">
@@ -109,9 +109,7 @@ export function SubscriptionStatus() {
 
           <div className="flex justify-between items-center">
             <span className="text-base-content/70">Current Period Ends:</span>
-            <span className="font-semibold">
-              {formatDate(subscription.current_period_end)}
-            </span>
+            <span className="font-semibold">{formatDate(subscription.current_period_end)}</span>
           </div>
 
           {subscription.cancel_at_period_end && (

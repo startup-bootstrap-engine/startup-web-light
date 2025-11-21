@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { StripeService } from '@/lib/stripe';
 
-interface BuyCreditsButtonProps {
+interface IBuyCreditsButtonProps {
   priceId: string;
   creditsAmount: number;
   price: number;
@@ -34,7 +34,7 @@ export function BuyCreditsButton({
   className = '',
   onSuccess,
   onError,
-}: BuyCreditsButtonProps) {
+}: IBuyCreditsButtonProps): JSX.Element {
   const [loading, setLoading] = useState(false);
 
   const handlePurchase = async () => {
@@ -48,10 +48,11 @@ export function BuyCreditsButton({
         cancelUrl: window.location.href,
       });
       onSuccess?.();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Purchase error:', error);
-      onError?.(error);
-      alert(error.message || 'Failed to initiate purchase');
+      const err = error instanceof Error ? error : new Error('Failed to initiate purchase');
+      onError?.(err);
+      alert(err.message);
     } finally {
       setLoading(false);
     }

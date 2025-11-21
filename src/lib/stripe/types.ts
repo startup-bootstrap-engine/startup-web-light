@@ -1,13 +1,8 @@
 // Stripe-related TypeScript types
 
-export type SubscriptionStatus =
-  | 'active'
-  | 'trialing'
-  | 'past_due'
-  | 'canceled'
-  | 'unpaid';
+export type SubscriptionStatus = 'active' | 'trialing' | 'past_due' | 'canceled' | 'unpaid';
 
-export interface UserProfile {
+export interface IUserProfile {
   id: string;
   stripe_customer_id: string | null;
   credits_balance: number;
@@ -17,7 +12,7 @@ export interface UserProfile {
   updated_at: string;
 }
 
-export interface Subscription {
+export interface ISubscription {
   id: string; // Stripe subscription ID
   user_id: string;
   status: string;
@@ -30,17 +25,17 @@ export interface Subscription {
   updated_at: string;
 }
 
-export interface Product {
+export interface IProduct {
   id: string; // Stripe product ID
   name: string;
   description: string | null;
   active: boolean;
-  metadata: Record<string, any> | null;
+  metadata: Record<string, unknown> | null;
   created_at: string;
   updated_at: string;
 }
 
-export interface Price {
+export interface IPrice {
   id: string; // Stripe price ID
   product_id: string;
   active: boolean;
@@ -50,24 +45,24 @@ export interface Price {
   interval: 'day' | 'week' | 'month' | 'year' | null;
   interval_count: number | null;
   trial_period_days: number | null;
-  metadata: Record<string, any> | null;
+  metadata: Record<string, unknown> | null;
   created_at: string;
   updated_at: string;
 }
 
-export interface CheckoutSessionRequest {
+export interface ICheckoutSessionRequest {
   priceId: string;
   successUrl?: string;
   cancelUrl?: string;
   metadata?: Record<string, string>;
 }
 
-export interface CheckoutSessionResponse {
+export interface ICheckoutSessionResponse {
   url: string;
   sessionId: string;
 }
 
-export interface CreditsPackage {
+export interface ICreditsPackage {
   priceId: string;
   amount: number; // Number of credits
   price: number; // Price in dollars
