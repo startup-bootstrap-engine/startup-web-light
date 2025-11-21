@@ -11,9 +11,7 @@ interface ITabNavigationClientProps {
   categories: IAssetCategory[];
 }
 
-export const TabNavigationClient = ({
-  categories,
-}: ITabNavigationClientProps): JSX.Element => {
+export const TabNavigationClient = ({ categories }: ITabNavigationClientProps): JSX.Element => {
   const pathname = usePathname();
   const [isMoreMenuOpen, setIsMoreMenuOpen] = useState(false);
 
