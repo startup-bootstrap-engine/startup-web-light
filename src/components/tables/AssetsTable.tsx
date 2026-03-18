@@ -1,3 +1,5 @@
+'use client';
+
 import { JSX, useState } from 'react';
 import { IAsset } from '../../types';
 import { InputField } from '../form/InputField';

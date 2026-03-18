@@ -1,3 +1,5 @@
+'use client';
+
 import { JSX } from 'react';
 import { Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts';
 import { IAsset } from '../types';

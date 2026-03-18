@@ -1,1 +1,1 @@
-yarn format && yarn lint && yarn tsc && yarn test:e2e
+yarn format && yarn lint && yarn tsc

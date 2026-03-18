@@ -1,3 +1,5 @@
+'use client';
+
 import { JSX } from 'react';
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { categories } from '../mocks/data';

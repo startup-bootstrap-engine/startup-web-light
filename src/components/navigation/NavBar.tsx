@@ -5,6 +5,7 @@ import { Button } from 'react-daisyui';
 import { useAuthStore } from '../../store/authStore';
 import { useModalStore } from '../../store/modalStore';
 import { AuthProvider } from '../../types/authProviders';
+import { CreditsDisplay } from '../stripe/CreditsDisplay';
 
 export const NavBar = (): JSX.Element => {
   const { open } = useModalStore();
@@ -31,7 +32,7 @@ export const NavBar = (): JSX.Element => {
 
   // Check if user is authenticated through email/password
   const isPasswordUser = user?.provider === AuthProvider.EMAIL;
-  const { VITE_APP_NAME } = loadEnv();
+  const { APP_NAME } = loadEnv();
 
   return (
     <nav
